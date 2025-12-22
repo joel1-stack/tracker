@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Test - Expense Tracker</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-item {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4f46e5;
+        }
+        .success { border-left-color: #10b981; background: #f0fdf4; }
+        .error { border-left-color: #ef4444; background: #fef2f2; }
+        .warning { border-left-color: #f59e0b; background: #fffbeb; }
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #4338ca; }
+        .status { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Expense Tracker PWA - Test Suite</h1>
+    
+    <div class="test-item">
+        <h3>📱 PWA Installation Test</h3>
+        <p>Service Worker Status: <span id="swStatus" class="status">Checking...</span></p>
+        <p>Manifest Status: <span id="manifestStatus" class="status">Checking...</span></p>
+        <button onclick="testInstallPrompt()">Test Install Prompt</button>
+    </div>
+
+    <div class="test-item">
+        <h3>💾 Storage Test</h3>
+        <p>IndexedDB Status: <span id="idbStatus" class="status">Checking...</span></p>
+        <p>LocalStorage Status: <span id="localStorageStatus" class="status">Checking...</span></p>
+        <button onclick="testStorage()">Test Storage</button>
+    </div>
+
+    <div class="test-item">
+        <h3>🌐 Network Test</h3>
+        <p>Online Status: <span id="onlineStatus" class="status">Checking...</span></p>
+        <button onclick="testOffline()">Simulate Offline</button>
+    </div>
+
+    <div class="test-item">
+        <h3>🔗 Navigation Test</h3>
+        <button onclick="testNavigation('index.html')">Test Index</button>
+        <button onclick="testNavigation('login.html')">Test Login</button>
+        <button onclick="testNavigation('dashboard.html')">Test Dashboard</button>
+        <button onclick="testNavigation('transactions.html')">Test Transactions</button>
+    </div>
+
+    <div class="test-item">
+        <h3>📊 Test Results</h3>
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        let testResults = [];
+
+        // Test Service Worker
+        async function testServiceWorker() {
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    document.getElementById('swStatus').textContent = '✅ Active';
+                    document.getElementById('swStatus').className = 'status success';
+                    addResult('Service Worker', 'PASS', 'Successfully registered');
+                } else {
+                    throw new Error('Service Worker not supported');
+                }
+            } catch (error) {
+                document.getElementById('swStatus').textContent = '❌ Failed';
+                document.getElementById('swStatus').className = 'status error';
+                addResult('Service Worker', 'FAIL', error.message);
+            }
+        }
+
+        // Test Manifest
+        async function testManifest() {
+            try {
+                const response = await fetch('manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    document.getElementById('manifestStatus').textContent = '✅ Valid';
+                    document.getElementById('manifestStatus').className = 'status success';
+                    addResult('Manifest', 'PASS', `App: ${manifest.name}`);
+                } else {
+                    throw new Error('Manifest not found');
+                }
+            } catch (error) {
+                document.getElementById('manifestStatus').textContent = '❌ Failed';
+                document.getElementById('manifestStatus').className = 'status error';
+                addResult('Manifest', 'FAIL', error.message);
+            }
+        }
+
+        // Test IndexedDB
+        async function testIndexedDB() {
+            try {
+                const request = indexedDB.open('TestDB', 1);
+                request.onsuccess = () => {
+                    document.getElementById('idbStatus').textContent = '✅ Working';
+                    document.getElementById('idbStatus').className = 'status success';
+                    addResult('IndexedDB', 'PASS', 'Database accessible');
+                    request.result.close();
+                };
+                request.onerror = () => {
+                    throw new Error('IndexedDB access failed');
+                };
+            } catch (error) {
+                document.getElementById('idbStatus').textContent = '❌ Failed';
+                document.getElementById('idbStatus').className = 'status error';
+                addResult('IndexedDB', 'FAIL', error.message);
+            }
+        }
+
+        // Test LocalStorage
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (value === 'value') {
+                    document.getElementById('localStorageStatus').textContent = '✅ Working';
+                    document.getElementById('localStorageStatus').className = 'status success';
+                    addResult('LocalStorage', 'PASS', 'Read/write successful');
+                } else {
+                    throw new Error('Value mismatch');
+                }
+            } catch (error) {
+                document.getElementById('localStorageStatus').textContent = '❌ Failed';
+                document.getElementById('localStorageStatus').className = 'status error';
+                addResult('LocalStorage', 'FAIL', error.message);
+            }
+        }
+
+        // Test Online Status
+        function testOnlineStatus() {
+            const status = navigator.onLine ? '✅ Online' : '⚠️ Offline';
+            document.getElementById('onlineStatus').textContent = status;
+            document.getElementById('onlineStatus').className = navigator.onLine ? 'status success' : 'status warning';
+            addResult('Network', navigator.onLine ? 'PASS' : 'INFO', `Status: ${navigator.onLine ? 'Online' : 'Offline'}`);
+        }
+
+        // Test Install Prompt
+        function testInstallPrompt() {
+            if (window.deferredPrompt) {
+                addResult('Install Prompt', 'PASS', 'Install prompt available');
+            } else {
+                addResult('Install Prompt', 'INFO', 'No install prompt (may already be installed)');
+            }
+        }
+
+        // Test Storage
+        function testStorage() {
+            testIndexedDB();
+            testLocalStorage();
+        }
+
+        // Test Offline
+        function testOffline() {
+            addResult('Offline Test', 'INFO', 'Check browser DevTools → Network → Offline to test');
+        }
+
+        // Test Navigation
+        function testNavigation(page) {
+            fetch(page)
+                .then(response => {
+                    if (response.ok) {
+                        addResult(`Navigation - ${page}`, 'PASS', 'Page accessible');
+                    } else {
+                        addResult(`Navigation - ${page}`, 'FAIL', `HTTP ${response.status}`);
+                    }
+                })
+                .catch(error => {
+                    addResult(`Navigation - ${page}`, 'FAIL', error.message);
+                });
+        }
+
+        // Add test result
+        function addResult(test, status, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const result = { test, status, message, timestamp };
+            testResults.push(result);
+            updateResults();
+        }
+
+        // Update results display
+        function updateResults() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.innerHTML = testResults.map(result => {
+                const statusClass = result.status === 'PASS' ? 'success' : 
+                                  result.status === 'FAIL' ? 'error' : 'warning';
+                return `
+                    <div class="test-item ${statusClass}">
+                        <strong>${result.test}</strong> - ${result.status}<br>
+                        <small>${result.message} (${result.timestamp})</small>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Run initial tests
+        window.addEventListener('load', () => {
+            testServiceWorker();
+            testManifest();
+            testIndexedDB();
+            testLocalStorage();
+            testOnlineStatus();
+            
+            // Test all navigation
+            ['index.html', 'login.html', 'dashboard.html', 'transactions.html'].forEach(page => {
+                testNavigation(page);
+            });
+        });
+
+        // Listen for online/offline events
+        window.addEventListener('online', () => {
+            testOnlineStatus();
+            addResult('Network Event', 'INFO', 'Back online');
+        });
+
+        window.addEventListener('offline', () => {
+            testOnlineStatus();
+            addResult('Network Event', 'INFO', 'Gone offline');
+        });
+    </script>
+</body>
+</html>

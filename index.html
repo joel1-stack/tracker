@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker | Welcome</title>
+    <meta name="description" content="Track your expenses offline - Fast, Simple, Secure">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4f46e5">
+
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Expense Tracker">
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://img.icons8.com/color/96/000000/money-bag.png" type="image/x-icon">
+
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Container */
+        .container {
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Logo */
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 48px;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ffffff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        /* Features List */
+        .features {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 12px;
+            transition: background 0.3s;
+        }
+
+        .feature:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        .feature-text {
+            font-size: 0.95rem;
+        }
+
+        /* Buttons */
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #4f46e5;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-icon {
+            font-size: 1.3rem;
+        }
+
+        /* Install Button - Hidden by default */
+        #installBtn {
+            display: none;
+            background: #10b981;
+            color: white;
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .logo {
+                width: 80px;
+                height: 80px;
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">💰</div>
+
+        <h1>Expense Tracker</h1>
+        <p class="tagline">Track your money. Anytime. Anywhere. Works offline!</p>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <div class="feature-text">
+                    <strong>Install App</strong><br>
+                    Add to home screen for quick access
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">📶</div>
+                <div class="feature-text">
+                    <strong>Works Offline</strong><br>
+                    Add expenses even without internet
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-text">
+                    <strong>Secure & Private</strong><br>
+                    Your data stays on your device
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">
+                    <strong>Simple Analytics</strong><br>
+                    Track income vs expenses easily
+                </div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <a href="login.html" class="btn btn-primary">
+                <span class="btn-icon">🚀</span>
+                Get Started
+            </a>
+
+            <button id="installBtn" class="btn btn-secondary">
+                <span class="btn-icon">⬇️</span>
+                Install App
+            </button>
+
+            <a href="dashboard.html" class="btn btn-secondary">
+                <span class="btn-icon">⚡</span>
+                Skip to Dashboard (Demo)
+            </a>
+        </div>
+
+        <p class="footer">
+            No account needed • 100% Free • Made with ❤️ for Kenya
+        </p>
+    </div>
+
+    <script>
+        // Enhanced PWA Installation Handler
+        let deferredPrompt;
+        let installButton = document.getElementById('installBtn');
+
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA install prompt triggered');
+
+            // Prevent Chrome 76+ from automatically showing the prompt
+            e.preventDefault();
+
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+
+            // Show the install button
+            if (installButton) {
+                installButton.style.display = 'flex';
+
+                // Update button text based on platform
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                const isAndroid = /android/i.test(navigator.userAgent);
+
+                if (isIOS) {
+                    installButton.innerHTML = `
+                <span class="btn-icon">📱</span>
+                Add to Home Screen
+            `;
+                    installButton.onclick = showIOSInstructions;
+                } else if (isAndroid) {
+                    installButton.innerHTML = `
+                <span class="btn-icon">⬇️</span>
+                Install App
+            `;
+                    installButton.onclick = showAndroidInstall;
+                } else {
+                    installButton.onclick = showDesktopInstall;
+                }
+            }
+
+            // Log for analytics
+            logInstallPrompt('shown');
+        });
+
+        // Show iOS installation instructions
+        function showIOSInstructions() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        padding: 20px;
+    `;
+
+            modal.innerHTML = `
+        <div style="background: white; border-radius: 20px; padding: 30px; max-width: 400px; text-align: center;">
+            <h2 style="margin-bottom: 20px;">Install Expense Tracker</h2>
+            <p style="margin-bottom: 20px;">To install this app on your iPhone:</p>
+            <ol style="text-align: left; margin-bottom: 25px; padding-left: 20px;">
+                <li style="margin-bottom: 10px;">Tap the <strong>Share</strong> button <span style="font-size: 20px;">📤</span></li>
+                <li style="margin-bottom: 10px;">Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                <li style="margin-bottom: 10px;">Tap <strong>"Add"</strong> in the top right corner</li>
+            </ol>
+            <button onclick="this.closest('div[style*=\"fixed\"]').remove()" 
+                    style="background: #4f46e5; color: white; border: none; padding: 12px 30px; 
+                           border-radius: 50px; font-weight: bold; cursor: pointer;">
+                Got it!
+            </button>
+        </div>
+    `;
+
+            document.body.appendChild(modal);
+            logInstallPrompt('ios_instructions_shown');
+        }
+
+        // Show Android installation
+        function showAndroidInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        logInstallPrompt('accepted');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                        logInstallPrompt('dismissed');
+                    }
+                    deferredPrompt = null;
+                    installButton.style.display = 'none';
+                });
+            }
+        }
+
+        // Show desktop installation
+        function showDesktopInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        logInstallPrompt('accepted');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                        logInstallPrompt('dismissed');
+                    }
+                    deferredPrompt = null;
+                    installButton.style.display = 'none';
+                });
+            }
+        }
+
+        // Check if app is already installed
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('PWA was installed');
+            installButton.style.display = 'none';
+            deferredPrompt = null;
+
+            // Redirect to app after installation
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+
+            logInstallPrompt('installed');
+        });
+
+        // Check display mode
+        function checkDisplayMode() {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Running as standalone PWA');
+                // Hide install button if running as PWA
+                installButton.style.display = 'none';
+                // If on index page and already installed, redirect to login
+                if (window.location.pathname.includes('index.html')) {
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
+            }
+        }
+
+        // Log install prompt events
+        function logInstallPrompt(event) {
+            const logs = JSON.parse(localStorage.getItem('pwa_install_logs') || '[]');
+            logs.push({
+                event: event,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                platform: navigator.platform
+            });
+            localStorage.setItem('pwa_install_logs', JSON.stringify(logs));
+        }
+
+        // Check on page load
+        window.addEventListener('load', () => {
+            checkDisplayMode();
+
+            // Add install button if it doesn't exist
+            if (!installButton) {
+                const btnContainer = document.querySelector('.buttons');
+                if (btnContainer) {
+                    installButton = document.createElement('button');
+                    installButton.id = 'installBtn';
+                    installButton.className = 'btn btn-secondary';
+                    installButton.innerHTML = `
+                <span class="btn-icon">📱</span>
+                Install App
+            `;
+                    installButton.style.display = 'none';
+                    btnContainer.appendChild(installButton);
+                }
+            }
+        });
+
+        // Periodically check PWA status
+        setInterval(() => {
+            if (deferredPrompt && installButton.style.display === 'none') {
+                installButton.style.display = 'flex';
+            }
+        }, 30000);
+    </script>
+</body>
+
+</html>

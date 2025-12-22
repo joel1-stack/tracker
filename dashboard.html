@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Expense Tracker</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4f46e5">
+
+    <!-- Icons -->
+    <link rel="icon" href="https://img.icons8.com/color/96/000000/dashboard.png" type="image/x-icon">
+
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 20px 20px 30px;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .menu-btn,
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .menu-btn:hover,
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .app-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        /* User Info */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-details h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .balance-label {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .balance-amount {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: #1e293b;
+        }
+
+        .balance-positive {
+            color: #10b981;
+        }
+
+        .balance-negative {
+            color: #ef4444;
+        }
+
+        .balance-change {
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+
+        .balance-change.up {
+            color: #10b981;
+        }
+
+        .balance-change.down {
+            color: #ef4444;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.income {
+            border-left: 5px solid #10b981;
+        }
+
+        .stat-card.expenses {
+            border-left: 5px solid #ef4444;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stat-amount.income {
+            color: #10b981;
+        }
+
+        .stat-amount.expenses {
+            color: #ef4444;
+        }
+
+        /* Recent Transactions */
+        .recent-section {
+            margin: 30px 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .view-all {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .transaction-item {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .transaction-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .transaction-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .transaction-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .transaction-icon.income {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .transaction-icon.expense {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .transaction-details h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .transaction-details p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .transaction-amount.income {
+            color: #10b981;
+        }
+
+        .transaction-amount.expense {
+            color: #ef4444;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-expense {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+
+        .add-expense:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 15px 40px rgba(79, 70, 229, 0.4);
+        }
+
+        .add-income {
+            background: white;
+            color: #10b981;
+        }
+
+        .add-income:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #64748b;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        .add-first-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-first-btn:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+
+        /* Navigation Menu */
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+
+        .nav-menu.active {
+            left: 0;
+        }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .close-menu {
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #475569;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: #4f46e5;
+        }
+
+        .nav-item.active {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .nav-icon {
+            font-size: 22px;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .balance-amount {
+                font-size: 2.3rem;
+            }
+
+            .stat-amount {
+                font-size: 1.5rem;
+            }
+
+            .quick-actions {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="top-bar">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <div class="app-title">Expense Tracker</div>
+            <button class="logout-btn" id="logoutBtn" title="Logout">👤</button>
+        </div>
+
+        <div class="user-info">
+            <div class="user-avatar">💰</div>
+            <div class="user-details">
+                <h2 id="userName">Welcome Back!</h2>
+                <p id="currentDate">Loading date...</p>
+            </div>
+        </div>
+
+        <div class="balance-card">
+            <div class="balance-label">
+                <span>💰</span> Current Balance
+            </div>
+            <div class="balance-amount" id="balanceAmount">KES 0.00</div>
+            <div class="balance-change" id="balanceChange">No transactions yet</div>
+        </div>
+    </header>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+        <div class="stat-card income">
+            <div class="stat-label">
+                <span>📈</span> Total Income
+            </div>
+            <div class="stat-amount income" id="totalIncome">KES 0.00</div>
+        </div>
+
+        <div class="stat-card expenses">
+            <div class="stat-label">
+                <span>📉</span> Total Expenses
+            </div>
+            <div class="stat-amount expenses" id="totalExpenses">KES 0.00</div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <section class="recent-section">
+        <div class="section-header">
+            <h3 class="section-title">Recent Transactions</h3>
+            <a href="transactions.html" class="view-all">
+                View All
+                <span>→</span>
+            </a>
+        </div>
+
+        <div class="transactions-list" id="transactionsList">
+            <!-- Transactions will be loaded here -->
+            <div class="empty-state">
+                <div class="empty-icon">💸</div>
+                <h3>No transactions yet</h3>
+                <p>Start tracking your income and expenses</p>
+                <button class="add-first-btn" id="addFirstBtn">
+                    Add Your First Transaction
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="action-btn add-income" id="addIncomeBtn" title="Add Income">
+            📈
+        </button>
+        <button class="action-btn add-expense" id="addExpenseBtn" title="Add Expense">
+            +
+        </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="nav-menu" id="navMenu">
+        <div class="nav-header">
+            <h3>Menu</h3>
+            <button class="close-menu" id="closeMenu">×</button>
+        </div>
+
+        <div class="nav-items">
+            <a href="dashboard.html" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="transactions.html" class="nav-item">
+                <span class="nav-icon">💳</span>
+                All Transactions
+            </a>
+            <a href="#" class="nav-item" id="addTransactionNav">
+                <span class="nav-icon">➕</span>
+                Add Transaction
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📁</span>
+                Categories
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📅</span>
+                Monthly Report
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                Settings
+            </a>
+            <a href="index.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                Home
+            </a>
+            <a href="#" class="nav-item" id="exportData">
+                <span class="nav-icon">📤</span>
+                Export Data
+            </a>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #f1f5f9; border-radius: 14px;">
+            <h4 style="margin-bottom: 10px; color: #475569;">Storage</h4>
+            <div style="font-size: 0.9rem; color: #64748b;">
+                <div>Transactions: <span id="transactionCount">0</span></div>
+                <div style="margin-top: 5px;">Storage used: <span id="storageUsed">0 KB</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <script>
+        // IndexedDB Database Setup
+        const DB_NAME = 'ExpenseTrackerDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'transactions';
+
+        let db;
+        let currentBalance = 0;
+        let totalIncome = 0;
+        let totalExpenses = 0;
+
+        // DOM Elements
+        const menuBtn = document.getElementById('menuBtn');
+        const closeMenu = document.getElementById('closeMenu');
+        const navMenu = document.getElementById('navMenu');
+        const overlay = document.getElementById('overlay');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const addExpenseBtn = document.getElementById('addExpenseBtn');
+        const addIncomeBtn = document.getElementById('addIncomeBtn');
+        const addFirstBtn = document.getElementById('addFirstBtn');
+        const addTransactionNav = document.getElementById('addTransactionNav');
+        const exportData = document.getElementById('exportData');
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registered for dashboard:', registration);
+                })
+                .catch(error => {
+                    console.log('SW registration failed:', error);
+                });
+        }
+
+        // Check Authentication
+        window.addEventListener('load', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            initializeDashboard();
+        });
+
+        // Initialize Dashboard
+        async function initializeDashboard() {
+            // Set user name
+            const userName = localStorage.getItem('userName') || 'User';
+            document.getElementById('userName').textContent = `Hello, ${userName}!`;
+
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+
+            // Initialize database
+            await initDatabase();
+
+            // Load transactions
+            await loadTransactions();
+
+            // Update UI
+            updateDashboard();
+        }
+
+        // Initialize IndexedDB
+        function initDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = (event) => {
+                    console.error('Database error:', event.target.error);
+                    reject(event.target.error);
+                };
+
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log('Database opened successfully');
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+
+                    // Create transactions store if it doesn't exist
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, {
+                            keyPath: 'id',
+                            autoIncrement: true
+                        });
+
+                        // Create indexes for searching
+                        store.createIndex('date', 'date', { unique: false });
+                        store.createIndex('type', 'type', { unique: false });
+                        store.createIndex('category', 'category', { unique: false });
+
+                        // Add sample data for demo
+                        addSampleData(store);
+                    }
+                };
+            });
+        }
+
+        // Add sample data for demo
+        function addSampleData(store) {
+            const sampleTransactions = [
+                {
+                    id: Date.now() + 1,
+                    type: 'income',
+                    category: 'Salary',
+                    amount: 50000,
+                    description: 'Monthly Salary',
+                    date: new Date().toISOString().split('T')[0],
+                    timestamp: new Date().getTime()
+                },
+                {
+                    id: Date.now() + 2,
+                    type: 'expense',
+                    category: 'Food',
+                    amount: 1200,
+                    description: 'Lunch at restaurant',
+                    date: new Date().toISOString().split('T')[0],
+                    timestamp: new Date().getTime()
+                },
+                {
+                    id: Date.now() + 3,
+                    type: 'expense',
+                    category: 'Transport',
+                    amount: 800,
+                    description: 'Bus fare',
+                    date: new Date().toISOString().split('T')[0],
+                    timestamp: new Date().getTime()
+                }
+            ];
+
+            sampleTransactions.forEach(transaction => {
+                store.add(transaction);
+            });
+        }
+
+        // Load all transactions
+        function loadTransactions() {
+            return new Promise((resolve, reject) => {
+                if (!db) {
+                    reject('Database not initialized');
+                    return;
+                }
+
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+
+                request.onsuccess = (event) => {
+                    const transactions = event.target.result;
+
+                    // Reset totals
+                    currentBalance = 0;
+                    totalIncome = 0;
+                    totalExpenses = 0;
+
+                    // Calculate totals
+                    transactions.forEach(t => {
+                        if (t.type === 'income') {
+                            totalIncome += t.amount;
+                            currentBalance += t.amount;
+                        } else {
+                            totalExpenses += t.amount;
+                            currentBalance -= t.amount;
+                        }
+                    });
+
+                    // Sort by date (newest first)
+                    transactions.sort((a, b) => b.timestamp - a.timestamp);
+
+                    // Store for later use
+                    window.transactions = transactions;
+
+                    // Update storage info
+                    updateStorageInfo(transactions);
+
+                    resolve(transactions);
+                };
+
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        // Update dashboard UI
+        function updateDashboard() {
+            // Update balance
+            const balanceElement = document.getElementById('balanceAmount');
+            const balanceChange = document.getElementById('balanceChange');
+
+            balanceElement.textContent = `KES ${currentBalance.toLocaleString('en-KE', { minimumFractionDigits: 2 })}`;
+
+            if (currentBalance >= 0) {
+                balanceElement.classList.add('balance-positive');
+                balanceElement.classList.remove('balance-negative');
+                balanceChange.textContent = 'Good financial health';
+                balanceChange.classList.add('up');
+                balanceChange.classList.remove('down');
+            } else {
+                balanceElement.classList.add('balance-negative');
+                balanceElement.classList.remove('balance-positive');
+                balanceChange.textContent = 'Spending exceeds income';
+                balanceChange.classList.add('down');
+                balanceChange.classList.remove('up');
+            }
+
+            // Update income and expenses
+            document.getElementById('totalIncome').textContent =
+                `KES ${totalIncome.toLocaleString('en-KE', { minimumFractionDigits: 2 })}`;
+            document.getElementById('totalExpenses').textContent =
+                `KES ${totalExpenses.toLocaleString('en-KE', { minimumFractionDigits: 2 })}`;
+
+            // Update recent transactions
+            displayRecentTransactions();
+        }
+
+        // Display recent transactions (last 5)
+        function displayRecentTransactions() {
+            const transactionsList = document.getElementById('transactionsList');
+            const transactions = window.transactions || [];
+
+            if (transactions.length === 0) {
+                transactionsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">💸</div>
+                        <h3>No transactions yet</h3>
+                        <p>Start tracking your income and expenses</p>
+                        <button class="add-first-btn" id="addFirstBtn">
+                            Add Your First Transaction
+                        </button>
+                    </div>
+                `;
+
+                // Re-attach event listener
+                document.getElementById('addFirstBtn').addEventListener('click', () => {
+                    window.location.href = 'transactions.html?action=add';
+                });
+
+                return;
+            }
+
+            // Clear existing content
+            transactionsList.innerHTML = '';
+
+            // Display only last 5 transactions
+            const recentTransactions = transactions.slice(0, 5);
+
+            recentTransactions.forEach(transaction => {
+                const transactionElement = document.createElement('div');
+                transactionElement.className = 'transaction-item';
+
+                // Format date
+                const date = new Date(transaction.date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                // Get category icon
+                const categoryIcon = getCategoryIcon(transaction.category);
+
+                transactionElement.innerHTML = `
+                    <div class="transaction-left">
+                        <div class="transaction-icon ${transaction.type}">
+                            ${categoryIcon}
+                        </div>
+                        <div class="transaction-details">
+                            <h4>${transaction.description}</h4>
+                            <p>${transaction.category} • ${formattedDate}</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount ${transaction.type}">
+                        ${transaction.type === 'income' ? '+' : '-'} KES ${transaction.amount.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
+                    </div>
+                `;
+
+                transactionsList.appendChild(transactionElement);
+            });
+        }
+
+        // Get icon for category
+        function getCategoryIcon(category) {
+            const icons = {
+                'Salary': '💰',
+                'Food': '🍔',
+                'Transport': '🚗',
+                'Shopping': '🛍️',
+                'Entertainment': '🎬',
+                'Bills': '📱',
+                'Healthcare': '🏥',
+                'Education': '📚',
+                'Other': '📦'
+            };
+
+            return icons[category] || '💸';
+        }
+
+        // Update storage information
+        function updateStorageInfo(transactions) {
+            const transactionCount = transactions.length;
+            const storageSize = JSON.stringify(transactions).length;
+            const storageKB = (storageSize / 1024).toFixed(2);
+
+            document.getElementById('transactionCount').textContent = transactionCount;
+            document.getElementById('storageUsed').textContent = `${storageKB} KB`;
+        }
+
+        // Event Listeners
+        menuBtn.addEventListener('click', () => {
+            navMenu.classList.add('active');
+            overlay.classList.add('active');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = 'login.html';
+            }
+        });
+
+        addExpenseBtn.addEventListener('click', () => {
+            window.location.href = 'transactions.html?action=add&type=expense';
+        });
+
+        addIncomeBtn.addEventListener('click', () => {
+            window.location.href = 'transactions.html?action=add&type=income';
+        });
+
+        addFirstBtn.addEventListener('click', () => {
+            window.location.href = 'transactions.html?action=add';
+        });
+
+        addTransactionNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'transactions.html?action=add';
+        });
+
+        exportData.addEventListener('click', (e) => {
+            e.preventDefault();
+            exportTransactions();
+        });
+
+        // Export transactions as JSON
+        function exportTransactions() {
+            const transactions = window.transactions || [];
+
+            if (transactions.length === 0) {
+                alert('No transactions to export');
+                return;
+            }
+
+            const dataStr = JSON.stringify(transactions, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+            const exportFileDefaultName = `expense-tracker-data-${new Date().toISOString().split('T')[0]}.json`;
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+
+            alert(`Exported ${transactions.length} transactions successfully!`);
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + E to add expense
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                addExpenseBtn.click();
+            }
+
+            // Ctrl + I to add income
+            if (e.ctrlKey && e.key === 'i') {
+                e.preventDefault();
+                addIncomeBtn.click();
+            }
+
+            // Escape to close menu
+            if (e.key === 'Escape') {
+                navMenu.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        });
+
+        // Check online/offline status
+        window.addEventListener('online', () => {
+            console.log('Dashboard: Online');
+            // Could sync data here if we had backend
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('Dashboard: Offline - still works!');
+        });
+
+        // Auto-refresh every minute to update totals
+        setInterval(async () => {
+            await loadTransactions();
+            updateDashboard();
+        }, 60000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login | Expense Tracker</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#059669">
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://img.icons8.com/color/96/000000/lock.png" type="image/x-icon">
+
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-3px);
+        }
+
+        /* Container */
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: #1f2937;
+        }
+
+        /* Logo */
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        /* PIN Display */
+        .pin-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .pin-digit {
+            width: 60px;
+            height: 70px;
+            background: #f3f4f6;
+            border: 2px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #111827;
+        }
+
+        .pin-digit.active {
+            border-color: #059669;
+            background: #d1fae5;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+        }
+
+        /* Keypad */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .key {
+            height: 70px;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .key:hover {
+            background: #f3f4f6;
+            transform: translateY(-2px);
+        }
+
+        .key:active {
+            transform: translateY(0);
+            background: #e5e7eb;
+        }
+
+        .key.clear {
+            color: #dc2626;
+            font-size: 0.9rem;
+            grid-column: span 2;
+        }
+
+        .key.submit {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .key.submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .key.submit:not(:disabled):hover {
+            background: linear-gradient(135deg, #047857, #059669);
+            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        /* Biometric Option */
+        .biometric {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .biometric-btn {
+            width: 100%;
+            padding: 16px;
+            background: #f3f4f6;
+            border: 2px solid #d1d5db;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .biometric-btn:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* Demo Info */
+        .demo-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: #f0fdf4;
+            border: 2px dashed #86efac;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: #065f46;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            .pin-digit {
+                width: 50px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+
+            .key {
+                height: 60px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Back Button -->
+    <a href="index.html" class="back-btn">←</a>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="logo">🔒</div>
+
+        <h1>Secure Access</h1>
+        <p class="subtitle">Enter your 4-digit PIN to access your expenses</p>
+
+        <!-- PIN Display -->
+        <div class="pin-display">
+            <div class="pin-digit" id="digit1">•</div>
+            <div class="pin-digit" id="digit2">•</div>
+            <div class="pin-digit" id="digit3">•</div>
+            <div class="pin-digit" id="digit4">•</div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage">
+            Incorrect PIN. Try 1234 for demo or set your own.
+        </div>
+
+        <!-- Keypad -->
+        <div class="keypad">
+            <div class="key" data-key="1">1</div>
+            <div class="key" data-key="2">2</div>
+            <div class="key" data-key="3">3</div>
+            <div class="key" data-key="4">4</div>
+            <div class="key" data-key="5">5</div>
+            <div class="key" data-key="6">6</div>
+            <div class="key" data-key="7">7</div>
+            <div class="key" data-key="8">8</div>
+            <div class="key" data-key="9">9</div>
+            <div class="key clear" id="clearBtn">Clear</div>
+            <div class="key" data-key="0">0</div>
+            <button class="key submit" id="submitBtn" disabled>Login</button>
+        </div>
+
+        <!-- Biometric Option -->
+        <div class="biometric">
+            <button class="biometric-btn" id="biometricBtn">
+                <span>👆</span> Use Fingerprint (Demo)
+            </button>
+        </div>
+
+        <!-- Demo Info -->
+        <div class="demo-info">
+            <strong>Demo Mode:</strong> Use PIN <code>1234</code> or click fingerprint.
+            Your PIN is stored securely on this device only.
+        </div>
+    </div>
+
+    <script>
+        // PIN Management
+        let pinDigits = ['', '', '', ''];
+        let currentPosition = 0;
+
+        // DOM Elements
+        const pinDisplay = document.querySelectorAll('.pin-digit');
+        const errorMessage = document.getElementById('errorMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const biometricBtn = document.getElementById('biometricBtn');
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registered for login page:', registration);
+                })
+                .catch(error => {
+                    console.log('SW registration failed:', error);
+                });
+        }
+
+        // Keypad Event Listeners
+        document.querySelectorAll('.key[data-key]').forEach(key => {
+            key.addEventListener('click', () => {
+                if (currentPosition < 4) {
+                    const digit = key.getAttribute('data-key');
+                    pinDigits[currentPosition] = digit;
+                    pinDisplay[currentPosition].textContent = '•';
+                    pinDisplay[currentPosition].classList.add('active');
+
+                    // Move to next position after delay
+                    setTimeout(() => {
+                        if (currentPosition < 3) {
+                            pinDisplay[currentPosition].classList.remove('active');
+                            currentPosition++;
+                            pinDisplay[currentPosition].classList.add('active');
+                        }
+
+                        // Check if PIN is complete
+                        if (currentPosition === 3 && pinDigits[3] !== '') {
+                            updateSubmitButton();
+                        }
+                    }, 150);
+                }
+            });
+        });
+
+        // Clear Button
+        clearBtn.addEventListener('click', () => {
+            resetPIN();
+        });
+
+        // Submit Button
+        submitBtn.addEventListener('click', () => {
+            const enteredPIN = pinDigits.join('');
+
+            // Demo PIN: 1234 or check localStorage
+            const savedPIN = localStorage.getItem('expenseTrackerPIN') || '1234';
+
+            if (enteredPIN === savedPIN) {
+                loginSuccess();
+            } else {
+                loginError();
+            }
+        });
+
+        // Biometric Button (Demo)
+        biometricBtn.addEventListener('click', () => {
+            // Simulate biometric authentication
+            biometricBtn.innerHTML = '<span>🔒</span> Scanning...';
+            biometricBtn.disabled = true;
+
+            setTimeout(() => {
+                // For demo, auto-login with success
+                loginSuccess();
+            }, 1500);
+        });
+
+        // Keyboard Support
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9' && currentPosition < 4) {
+                // Simulate clicking the corresponding key
+                const keyElement = document.querySelector(`.key[data-key="${e.key}"]`);
+                if (keyElement) {
+                    keyElement.click();
+                }
+            } else if (e.key === 'Backspace') {
+                if (currentPosition > 0) {
+                    currentPosition--;
+                }
+                pinDigits[currentPosition] = '';
+                updatePinDisplay();
+            } else if (e.key === 'Enter' && !submitBtn.disabled) {
+                submitBtn.click();
+            }
+        });
+
+        // Functions
+        function updatePinDisplay() {
+            pinDisplay.forEach((digit, index) => {
+                digit.textContent = pinDigits[index] ? '•' : '';
+                digit.classList.toggle('active', index === currentPosition);
+            });
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const isComplete = pinDigits.every(digit => digit !== '');
+            submitBtn.disabled = !isComplete;
+        }
+
+        function resetPIN() {
+            pinDigits = ['', '', '', ''];
+            currentPosition = 0;
+            pinDisplay.forEach(digit => {
+                digit.classList.remove('active');
+            });
+            pinDisplay[0].classList.add('active');
+            updatePinDisplay();
+            hideError();
+        }
+
+        function loginSuccess() {
+            console.log('Login successful');
+
+            // Save PIN if it's first time (demo PIN 1234)
+            if (!localStorage.getItem('expenseTrackerPIN')) {
+                localStorage.setItem('expenseTrackerPIN', '1234');
+            }
+
+            // Store login state
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('lastLogin', new Date().toISOString());
+
+            // Show success animation
+            submitBtn.innerHTML = '<span>✓</span> Success!';
+            submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 800);
+        }
+
+        function loginError() {
+            errorMessage.style.display = 'block';
+            submitBtn.disabled = true;
+
+            // Shake animation
+            pinDisplay.forEach(digit => {
+                digit.style.animation = 'shake 0.5s';
+            });
+
+            setTimeout(() => {
+                pinDisplay.forEach(digit => {
+                    digit.style.animation = '';
+                });
+                resetPIN();
+            }, 1500);
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                // Check if login is recent (within 24 hours)
+                const lastLogin = localStorage.getItem('lastLogin');
+                if (lastLogin) {
+                    const hoursSinceLogin = (Date.now() - new Date(lastLogin)) / (1000 * 60 * 60);
+                    if (hoursSinceLogin < 24) {
+                        // Auto-redirect to dashboard
+                        window.location.href = 'dashboard.html';
+                    }
+                }
+            }
+
+            // Initialize first digit as active
+            pinDisplay[0].classList.add('active');
+
+            // Add shake animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-10px); }
+                    75% { transform: translateX(10px); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Offline check
+        window.addEventListener('offline', () => {
+            console.log('Offline mode - login still works!');
+        });
+    </script>
+</body>
+
+</html>
